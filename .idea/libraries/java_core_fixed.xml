@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="java-core-fixed">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../Jena/jena/jena-core/src/main" />
+    </SOURCES>
+  </library>
+</component>
