@@ -1,7 +1,6 @@
 package ru.vstu;
 
 import org.apache.jena.atlas.logging.LogCtl;
-import org.apache.jena.ext.xerces.xs.StringList;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
@@ -18,8 +17,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class SparqlRunner {
@@ -49,39 +46,6 @@ public class SparqlRunner {
         System.exit(0);
     }
 
-    public static String joinList(String sep, List<String> list) {
-        StringBuilder res = new StringBuilder();
-        for (String el : list) {
-            if (res.length() > 0)
-                res.append(sep);
-            res.append(el);
-        }
-        return res.toString();
-    }
-
-    public static List<String> splitRules(String rules_str) {
-        final String sep = " ;";
-        final String PREFIX = "PREFIX";
-        List<String> prefixLines = new ArrayList<String>();
-        List<String> separateQueries = new ArrayList<String>();
-        String[] lines = rules_str.split("\n");
-        StringBuilder query = new StringBuilder();
-
-        for (String line : lines) {
-            if (line.startsWith("#") || line.isEmpty())
-                continue;
-            if (line.startsWith(PREFIX)) {
-                prefixLines.add(line);
-                continue;
-            }
-            query.append("\n").append(line);
-            if (line.contains(sep)){
-                separateQueries.add(joinList("\n", prefixLines) + query);
-            }
-        }
-        return separateQueries;
-    }
-
     public static void runReasoning(String in_rdf_url, String rules_path, String out_rdf_path) {
         // Register a namespace for use in the rules
 //        String baseURI = "http://vstu.ru/poas/ctrl_structs_2020-05_v1#";
@@ -97,20 +61,15 @@ public class SparqlRunner {
             return;
         }
 
-        List<String> rules = splitRules(rules_str);
-
         Model data = RDFDataMgr.loadModel(in_rdf_url);
         // Construct a dataset basing on the loaded model
         Dataset dataset = DatasetFactory.create(data);
 
-        List<UpdateRequest> requests = new ArrayList<>();
         // Build up the request then execute it.
         // This is the preferred way for complex sequences of operations.
-        for (String rule_str : rules) {
-            UpdateRequest request = UpdateFactory.create();
-            request.add(rule_str);
-            requests.add(request);
-        }
+        UpdateRequest request = UpdateFactory.create() ;
+        request.add(rules_str);
+
 
         long startTime = System.nanoTime();  // start intensive work
         long lapTime = startTime;
@@ -121,11 +80,7 @@ public class SparqlRunner {
         for(int i = 1; prev_NTriples < NTriples && i < 1000; i+=1)
         {
             // perform the operations.
-            for (UpdateRequest request : requests) {
-                UpdateAction.execute(request, dataset);
-                System.out.print(".");
-            }
-            System.out.println();
+            UpdateAction.execute(request, dataset);
 
             // retrieve the size of model
             prev_NTriples = NTriples;
