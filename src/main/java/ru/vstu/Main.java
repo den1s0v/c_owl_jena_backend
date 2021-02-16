@@ -1,7 +1,5 @@
 package ru.vstu;
 
-import org.apache.jena.ext.xerces.impl.xs.util.StringListImpl;
-import org.apache.jena.ext.xerces.xs.StringList;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -14,13 +12,12 @@ import org.apache.jena.util.PrintUtil;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
 
-/** Tutorial 3 Statement attribute accessor methods
+/** jar entry
  */
 public class Main {
     public static void main(String args[]) {
