@@ -6,12 +6,16 @@
     </CLASSES>
     <JAVADOC>
       <root url="jar://$MAVEN_REPOSITORY$/org/apache/jena/jena-core/3.17.0/jena-core-3.17.0-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/jena/jena-core/3.18.0-SNAPSHOT/jena-core-3.18.0-SNAPSHOT-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
       <root url="jar://$MAVEN_REPOSITORY$/org/apache/jena/jena-core/3.17.0/jena-core-3.17.0-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/jena/jena-core/3.18.0-SNAPSHOT/jena-core-3.18.0-SNAPSHOT-sources.jar!/" />
     </SOURCES>
     <excluded>
       <root url="jar://$MAVEN_REPOSITORY$/org/apache/jena/jena-core/3.17.0/jena-core-3.17.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/jena/jena-core/3.17.0/jena-core-3.17.0-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/jena/jena-core/3.17.0/jena-core-3.17.0-javadoc.jar!/" />
     </excluded>
   </library>
 </component>
