@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Jena" target="16" />
+      <module name="Jena" target="14" />
     </bytecodeTargetLevel>
   </component>
 </project>
