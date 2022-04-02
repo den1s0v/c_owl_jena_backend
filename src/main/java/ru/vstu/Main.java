@@ -3,11 +3,13 @@ package ru.vstu;
 import org.apache.jena.rdf.model.InfModel;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.reasoner.rulesys.BuiltinRegistry;
 import org.apache.jena.reasoner.rulesys.GenericRuleReasoner;
 import org.apache.jena.reasoner.rulesys.Rule;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.util.PrintUtil;
+import ru.vstu.builtins.MakeNamedSkolem;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -21,7 +23,10 @@ import java.util.List;
 /** jar entry
  */
 public class Main {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
+
+        // register builtin for in-rule usage
+        BuiltinRegistry.theRegistry.register(new MakeNamedSkolem());
 
         long startTime = System.nanoTime();
         if(args.length < 3) {
@@ -112,6 +117,8 @@ public class Main {
         {
             List<Rule> rules = Rule.rulesFromURL(curr_rules_path);
 
+            System.out.println(rules.size() + " rules in: " + curr_rules_path);
+
             GenericRuleReasoner reasoner = new GenericRuleReasoner(rules);
     //        reasoner.setOWLTranslation(true);               // not needed in RDFS case
     //        reasoner.setTransitiveClosureCaching(true);     // not required when there is no use of transitivity
@@ -120,7 +127,7 @@ public class Main {
 
             InfModel inf = ModelFactory.createInfModel(reasoner, data);
             inf.prepare();
-            data = inf;
+            data.add(inf.getDeductionsModel());  // inf model keeps previous rules active: retain data only
 
             long estimatedTime = System.nanoTime() - startTime;
             System.out.println("Time spent on reasoning: " + String.valueOf((float)(estimatedTime / 1000 / 1000) / 1000) + " seconds.");
@@ -128,9 +135,8 @@ public class Main {
         long estimatedTime = System.nanoTime() - startTimeWhole;
         System.out.println("Time spent on all reasoning steps: " + String.valueOf((float)(estimatedTime / 1000 / 1000) / 1000) + " seconds.");
 
-        FileOutputStream out = null;
         try {
-            out = new FileOutputStream(out_rdf_path);
+            FileOutputStream out = new FileOutputStream(out_rdf_path);
             RDFDataMgr.write(out, data, Lang.NTRIPLES);  // Lang.NTRIPLES  or  Lang.RDFXML
 
         } catch (FileNotFoundException e) {
