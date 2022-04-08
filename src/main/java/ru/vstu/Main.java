@@ -28,10 +28,22 @@ public class Main {
         // register builtin for in-rule usage
         BuiltinRegistry.theRegistry.register(new MakeNamedSkolem());
 
+        if (args[0].toLowerCase().contains("service")) {
+            int port = 20299;
+            if (args.length == 3 && args[1].contains("port")) {
+                port = Integer.parseInt(args[2]);
+                System.out.println("Server port = " + port);
+            }
+            BackgroundServer.init(port);
+            // it will run until halt ...
+            return;
+        }
+
+
         long startTime = System.nanoTime();
         if(args.length < 3) {
             System.out.println("Please provide (the optional mode and) 3 commandline arguments:\n" +
-                    " 0) Mode to run in: 'jena' (the default) or 'sparql'\n" +
+                    " 0) Mode to run in: 'jena' (the default) or 'sparql' or 'service'\n" +
                     " 1) Path to input RDF file\n" +
                     " 2) Path to Jena rules file (for several files separated with ';' their rule sets executed sequentially)\n" +
                     " 3) Path to location where to store the output N-Triples file\n" +
@@ -87,7 +99,7 @@ public class Main {
                 return iri;
             }
         }
-        System.out.println("::::::: Warning: IRI for prefix '" + prefix + "' not found!");
+        System.out.println("::::::: Warning: IRI for prefix '" + prefix + "' was not found!");
 
         return "";
     }
@@ -125,12 +137,10 @@ public class Main {
 
             long startTime = System.nanoTime();
 
-            InfModel inf = ModelFactory.createInfModel(reasoner, data);
-            inf.prepare();
-            data.add(inf.getDeductionsModel());  // inf model keeps previous rules active: retain data only
+            data = runReasoningStep(data, reasoner);
 
             long estimatedTime = System.nanoTime() - startTime;
-            System.out.println("Time spent on reasoning: " + String.valueOf((float)(estimatedTime / 1000 / 1000) / 1000) + " seconds.");
+            System.out.println("Time spent on reasoning step: " + String.valueOf((float)(estimatedTime / 1000 / 1000) / 1000) + " seconds.");
         }
         long estimatedTime = System.nanoTime() - startTimeWhole;
         System.out.println("Time spent on all reasoning steps: " + String.valueOf((float)(estimatedTime / 1000 / 1000) / 1000) + " seconds.");
@@ -143,5 +153,14 @@ public class Main {
             e.printStackTrace();
             System.out.println("Cannot write to file: " + out_rdf_path);
         }
+    }
+
+    public static Model runReasoningStep(Model data, GenericRuleReasoner reasoner) {
+        InfModel inf = ModelFactory.createInfModel(reasoner, data);
+        inf.prepare();
+        // Copy data from in model
+        // data.add(inf.getDeductionsModel());  // inf model keeps its rules active: retain data only
+        data = ModelFactory.createDefaultModel().add(inf);
+        return data;
     }
 }
