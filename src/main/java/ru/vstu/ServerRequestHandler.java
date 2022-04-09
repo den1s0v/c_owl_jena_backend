@@ -99,17 +99,21 @@ public class ServerRequestHandler implements JenaReasoner.Iface {
         {
             if(line.startsWith(pattern))
             {
-                int ib = line.indexOf("@prefix ") + 8;
-                int ie = line.indexOf(';');
-                String prefix = line.substring(ib, ie).trim();
+                int ib = line.indexOf("@prefix ");  // 8 chars
+                int ie = line.indexOf(':');
+                if (ib == -1 || ie == -1)
+                    continue;
+                String prefix = line.substring(ib + 8, ie).trim();
 
                 if (registeredPrefixes.contains(prefix)) {
                     continue;
                 }
 
-                ib = line.indexOf('<') + 1;
+                ib = line.indexOf('<');  // 1 char
                 ie = line.indexOf('>');
-                String iri = line.substring(ib, ie);
+                if (ib == -1 || ie == -1)
+                    continue;
+                String iri = line.substring(ib + 1, ie);
                 System.out.println("::::::: Found IRI for prefix '" + prefix + "': " + iri);
 
                 registerIriPrefix(prefix, iri);
@@ -127,12 +131,12 @@ public class ServerRequestHandler implements JenaReasoner.Iface {
         return true;
     }
 
-    public void saveRdf(java.nio.ByteBuffer rdfData, java.lang.String filename) throws org.apache.thrift.TException {
+    public void saveRdf(java.nio.ByteBuffer rdfData, java.lang.String filename) {
         // just debug the connection ...
         System.out.println("saveRdf(" +rdfData + ", " + filename + ")");
     }
 
-    public java.nio.ByteBuffer runReasoner(java.nio.ByteBuffer rdfData, java.lang.String rulePaths) throws org.apache.thrift.TException {
+    public java.nio.ByteBuffer runReasoner(java.nio.ByteBuffer rdfData, java.lang.String rulePaths) {
 
         Checkpointer ch = new Checkpointer();
 
@@ -165,6 +169,15 @@ public class ServerRequestHandler implements JenaReasoner.Iface {
 
         ch.hit("Serializing output rdf took");
         ch.since_start("Total request processing time", false);
+        System.out.println();
+
+//        /// debug!
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
         return resultBuffer;
     }
 
