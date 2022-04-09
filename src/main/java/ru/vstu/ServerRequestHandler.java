@@ -142,7 +142,7 @@ public class ServerRequestHandler implements JenaReasoner.Iface {
 
         List<GenericRuleReasoner> reasoners = getReasonersChain(rulePaths);
 
-        ch.hit("Retrieving rules took");
+        //// ch.hit("Retrieving rules took");
 
         // read model as RDF/XML from byte stream
         Model data = ModelFactory.createDefaultModel();
