@@ -68,6 +68,42 @@ public class BuiltinTest {
 
         });
 
+        BuiltinRegistry.theRegistry.register(new BaseBuiltin() {
+            @Override
+            public String getName() {
+                return "pp";  // property path
+            }
+            @Override
+            public int getArgLength() {
+                return 3;
+            }
+            @Override
+            public boolean bodyCall(Node[] args, int length, RuleContext context) {
+                checkArgs(length, context);
+                BindingEnvironment env = context.getEnv();
+                Node n1 = getArg(0, args, context);
+                Node n2 = getArg(1, args, context);
+                Node n3 = getArg(2, args, context);
+                /// debug on breakpoint here ///
+                //context.
+
+                if (n1.isLiteral() && n2.isLiteral()) {
+                    Object v1 = n1.getLiteralValue();
+                    Object v2 = n2.getLiteralValue();
+                    Node sum = null;
+                    if (v1 instanceof Number && v2 instanceof Number) {
+                        Number nv1 = (Number)v1;
+                        Number nv2 = (Number)v2;
+                        int sumInt = nv1.intValue()+nv2.intValue();
+                        sum = Util.makeIntNode(sumInt);
+                        return env.bind(args[2], sum);
+                    }
+                }
+                return false;
+            }
+
+        });
+
         // NON SERVE
 
         //      final String exampleRuleString2 =
@@ -77,7 +113,8 @@ public class BuiltinTest {
         final String exampleRuleString =
                 "[matematica:"+
                         "(?p http://www.semanticweb.org/prova_rules_M#totale_crediti ?x), "+
-                        "mysum(5,2, ?res)"+
+                        "mysum(5,2, ?res)," +
+                        "pp(?p, \"a/owl:subclassOf\", owl:Thing)," +
                         " -> " +
 //                        "(?p rdf:type  http://www.semanticweb.org/prova_rules_M#:Persona)"+
 //                        "(?e rdf:type  http://www.semanticweb.org/prova_rules_M#:Esame)"+
