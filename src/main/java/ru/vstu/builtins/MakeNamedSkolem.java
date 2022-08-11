@@ -36,7 +36,7 @@ public class MakeNamedSkolem extends BaseBuiltin {
      * @param length the length of the argument list, may be less than the length of the args array
      * for some rule engines
      * @param context an execution context giving access to other relevant data
-     * @return return true if the buildin predicate is deemed to have succeeded in
+     * @return return true if the builtin predicate is deemed to have succeeded in
      * the current environment
      */
     @Override
